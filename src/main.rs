@@ -27,11 +27,15 @@ fn main() {
             .expect("Failed to read line");
 
         input_buffer = input_buffer.trim().to_string();
-        if input_buffer.len() != 0 && input_buffer.chars().nth(0).expect("Could not parse command") == '.' {
+        if input_buffer.len() == 0 {
+            continue;
+        }
+
+        if input_buffer.chars().nth(0).expect("Could not parse command") == '.' {
             match execute_command(&input_buffer) {
                 CommandResult::Success => continue,
                 CommandResult::Unrecognized => {
-                    println!("Unrecognized command '{input_buffer}'\n");
+                    println!("Unrecognized command '{input_buffer}'");
                     continue;
                 },
             }
@@ -55,7 +59,8 @@ fn execute_command(command: &String) -> CommandResult {
 }
 
 fn prepare_statement(statement: &String) -> (bool, Statement) {
-    match statement.as_str() {
+    let split_statement: Vec<&str> = statement.split_whitespace().collect();
+    match split_statement[0] {
         STATEMENT_INSERT => (true, Statement::Insert),
         STATEMENT_SELECT => (true, Statement::Select),
         _ => (false, Statement::None)
